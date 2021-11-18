@@ -37,6 +37,8 @@ def update(id):
     username = data.get("username")
     password = data.get("password")
     purchase = data.get("purchase")
+    # make sure it always has id for further query
+    purchase["id"] = id
     # NOTE: make sure all the properties of purchase are submitted.
     db = get_db()
     db.users.find_one_and_update(
