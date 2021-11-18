@@ -36,9 +36,9 @@ def login():
     user = get_db().users.find_one(
         {"username": username, "password": password})
     if (user):
-        return jsonify(data)
+        return jsonify({"message": "Successful login"})
     else:
-        return make_response(jsonify({"message": "Unsuccessully login"}), 403)
+        return make_response(jsonify({"message": "Unsuccessful login"}), 401)
 
 
 @user_routes.route("/logout", methods=['POST'])
