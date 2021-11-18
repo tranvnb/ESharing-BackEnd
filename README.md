@@ -19,7 +19,7 @@ To **deactivate** virtual environment, run `deactivate` to deactivate environmen
 
 Run `pip list` to list all installed packages
 
-Run `pip install -r requirements.txt -y` to remove all dependencies
+Run `pip install -r requirements.txt -y` to install all dependencies
 
 ## Running application
 
