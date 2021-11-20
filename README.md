@@ -39,6 +39,7 @@ Create new user
 ```bash
     $ curl -X POST -H "Content-Type: application/json" \
         -d '{
+        "id": "1"
         "username": "username",
         "password": "password",
         "first_name": "first_name",
