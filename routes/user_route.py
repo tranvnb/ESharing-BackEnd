@@ -6,7 +6,7 @@ from .database import get_db
 user_routes = Blueprint("user", __name__)
 
 
-@user_routes.route("/")
+@user_routes.route("/all")
 def find_all_user():
     # for testing only
     db = get_db()
@@ -23,7 +23,7 @@ def find_all_user():
 
     # serialize to json string
     users_json_string = json.dumps(users_dicts, default=json_util.default)
-    return jsonify({"users": json.loads(users_json_string)})
+    return jsonify(json.loads(users_json_string))
     # return jsonify({"users": json_util.dumps(users)})
 
 
