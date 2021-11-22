@@ -31,7 +31,7 @@ def getMembers(username):
     db = get_db()
     # member must be alone and not have any member
     user = db.users.find_one(
-        {"username": "username"}, {"members": True})
+        {"username": username}, {"members": True})
     if (user is None):
         return make_response(jsonify({"message": "user not exist"}), 403)
     members = user.get("members")
@@ -42,7 +42,7 @@ def getPurchases(username):
     db = get_db()
     # member must be alone and not have any member
     user = db.users.find_one(
-        {"username": "username"}, {"purchases": True})
+        {"username": username}, {"purchases": True})
     if (user is None):
         return make_response(jsonify({"message": "user not exist"}), 403)
     purchases = user.get("purchases")
@@ -109,7 +109,7 @@ def add_member():
 
         # member must be alone and not have any member
         added_member = db.users.find_one(
-            {"username": "username"}, {"members": True})
+            {"username": member}, {"members": True})
         if (added_member.get("members") is not None and len(added_member.get("members")) > 0):
             return make_response(jsonify({"message": "Can not add member to your household, member must be alone."}), 403)
 
@@ -154,7 +154,7 @@ def remove_member():
 
         # set the removed member to the owner on their own
         db.users.update_one(
-            {"username": username},
+            {"username": member},
             {"$set": {"is_owner": True}}
         )
 
