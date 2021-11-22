@@ -26,6 +26,27 @@ def find_all_user():
     return jsonify(json.loads(users_json_string))
     # return jsonify({"users": json_util.dumps(users)})
 
+@user_routes.route("/<string:username>/members", methods=["GET"])
+def getMembers(username):
+    db = get_db()
+    # member must be alone and not have any member
+    user = db.users.find_one(
+        {"username": "username"}, {"members": True})
+    if (user is None):
+        return make_response(jsonify({"message": "user not exist"}), 403)
+    members = user.get("members")
+    return jsonify(json.loads(json_util.dumps(members)))
+
+@user_routes.route("/<string:username>/purchases", methods=["GET"])
+def getPurchases(username):
+    db = get_db()
+    # member must be alone and not have any member
+    user = db.users.find_one(
+        {"username": "username"}, {"purchases": True})
+    if (user is None):
+        return make_response(jsonify({"message": "user not exist"}), 403)
+    purchases = user.get("purchases")
+    return jsonify(json.loads(json_util.dumps(purchases)))
 
 @user_routes.route("/login", methods=['POST'])
 def login():
