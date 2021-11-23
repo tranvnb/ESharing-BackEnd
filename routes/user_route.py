@@ -6,25 +6,11 @@ from .database import get_db
 user_routes = Blueprint("user", __name__)
 
 
-@user_routes.route("/all")
+@user_routes.route("/all", methods=["GET"])
 def find_all_user():
-    # for testing only
     db = get_db()
-    # member must be alone and not have any member
-    # added_members = db.users.find_one(
-    #     {"username": "username"}, {"members": True})
-
-    # print(len([]))
-    # print(len(added_members.get("members")))
-
-    users = list(db.users.find({}))
-
-    users_dicts = [doc for doc in users]
-
-    # serialize to json string
-    users_json_string = json.dumps(users_dicts, default=json_util.default)
-    return jsonify(json.loads(users_json_string))
-    # return jsonify({"users": json_util.dumps(users)})
+    users = db.users.find({})
+    return jsonify(json.loads(json_util.dumps(users)))
 
 @user_routes.route("/<string:username>/members", methods=["GET"])
 def getMembers(username):
@@ -110,6 +96,10 @@ def add_member():
         # member must be alone and not have any member
         added_member = db.users.find_one(
             {"username": member}, {"members": True})
+
+        if (added_member is None):
+            return make_response(jsonify({"message": "Added member not exists"}), 403)
+        
         if (added_member.get("members") is not None and len(added_member.get("members")) > 0):
             return make_response(jsonify({"message": "Can not add member to your household, member must be alone."}), 403)
 
