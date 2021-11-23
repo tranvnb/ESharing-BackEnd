@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from flask.helpers import make_response
 from flask.json import jsonify
 import json
 from bson import json_util
@@ -26,7 +27,7 @@ def remove(id):
     password = data.get("password")
     # should prevent access database if invalid data
     db = get_db()
-    db.purchases.update_one(
+    db.users.update_one(
         {"username": username, "password": password}, {"$pull": {"purchases": {"id": id}}})
     return jsonify({"message": "Purchase removed."})
 
@@ -46,14 +47,22 @@ def update(id):
     return jsonify({"message": "Purchase updated."})
 
 
-@ purchase_routes.route("/<string:id>", methods=['GET'])
-def findById(id):
+@ purchase_routes.route("/<string:member>/<string:id>", methods=['POST'])
+def findMemberPurchaseById(member, id):
     # TODO: should allow only in household, otherwise return false
     data = request.get_json()
     username = data.get("username")
+    password = data.get("password")
     db = get_db()
+
+    user = db.users.find_one(
+        {"username": username, "password": password, "members": {"$in":[member]}})
+
+    if (user is None):
+        return make_response(jsonify({"message": "you dont have permission to view this purchases"}), 403)
+
     purchase = db.users.find_one(
-        {"username": username, "purchases.id": id})
+        {"username": member, "purchases.id": id})
     return json.dumps(purchase, sort_keys=True, indent=2, default=json_util.default)
 
 
