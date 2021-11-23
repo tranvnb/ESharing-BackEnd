@@ -55,3 +55,15 @@ def findById(id):
     purchase = db.users.find_one(
         {"username": username, "purchases.id": id})
     return json.dumps(purchase, sort_keys=True, indent=2, default=json_util.default)
+
+
+@ purchase_routes.route("/all", methods=['DELETE'])
+def findById():
+    # TODO: should allow only in household, otherwise return false
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+    db = get_db()
+    purchase = db.users.update_one(
+        {"username": username, "password": password}, {"$set": {"purchases": []}})
+    return jsonify({"message": "All purchases removed."})
