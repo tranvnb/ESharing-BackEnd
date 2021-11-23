@@ -58,7 +58,7 @@ def findById(id):
 
 
 @ purchase_routes.route("/all", methods=['DELETE'])
-def findById():
+def deleteAll():
     # TODO: should allow only in household, otherwise return false
     data = request.get_json()
     username = data.get("username")
