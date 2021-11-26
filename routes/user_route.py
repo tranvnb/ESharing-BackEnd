@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, make_response
-from flask.globals import request
+from flask import Blueprint, jsonify, make_response, request
 import json
 from bson import json_util
 from .database import get_db
