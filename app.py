@@ -45,9 +45,20 @@ def request_join_household(data):
     message = "{\"FROM_USER\":\"" + person +"\", \"TO_OWNER\":\"" + owner + "\"}"
     print("JOIN_HOUSEHOLD_REQUEST: " + message)
     if owner in users.keys():
+        print("emitted JOIN_HOUSEHOLD_REQUEST")
         emit('JOIN_HOUSEHOLD_REQUEST', message, room = users[owner])
     else:
-        emit('JOIN_HOUSEHOLD_REQUEST_RESPONSE', "Your requested owner does not exist", room = users[person])
+        print("emit JOIN_HOUSEHOLD_REQUEST_RESPONSE")
+        emit('JOIN_HOUSEHOLD_REQUEST_RESPONSE', "{\"MESSAGE\":\"Your requested owner does not exist\"}", room = users[person])
+
+@socketio.on("JOIN_HOUSEHOLD_REQUEST_RESPONSE")
+def resonse_from_house_owner(data):
+    json = json_util.loads(json_util.dumps(data))
+    user = json.get("TO_USER")
+    owner = json.get("FROM_OWNER")
+    message = json.get("MESSAGE")
+    print("emit JOIN_HOUSEHOLD_REQUEST_RESPONSE from owner reply")
+    emit('JOIN_HOUSEHOLD_REQUEST_RESPONSE', "{\"MESSAGE\":\"Message from the "+ owner +": " + message + "\"}" , room = users[user])
 
 @ app.route("/")
 def home():
