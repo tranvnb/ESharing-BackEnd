@@ -54,18 +54,23 @@ def logout():
 
 @user_routes.route("/signup", methods=["POST"])
 def signup():
+    
     data = request.get_json()
+    print("User signuppppp", data)
     db = get_db()
     username = data.get("username")
     password = data.get("password")
     if (db.users.find_one({"username": username}) is not None):
         return make_response(jsonify({"message": "User already exists!"}), 403)
 
+    id = data.get("id")
     first_name = data.get("first_name")
     last_name = data.get("last_name")
     is_owner = data.get("is_owner")
-    members = data.get("members")
+    # members = data.get("members")
+    members = []
     user = {
+        "id": id,
         "username": username,
         "password": password,
         "first_name": first_name,
