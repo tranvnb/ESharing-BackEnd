@@ -69,6 +69,7 @@ def signup():
     is_owner = data.get("is_owner")
     # members = data.get("members")
     members = []
+    purchases = []
     user = {
         "id": id,
         "username": username,
@@ -76,7 +77,8 @@ def signup():
         "first_name": first_name,
         "last_name": last_name,
         "is_owner": is_owner,
-        "members": members
+        "members": members,
+        "purchases": purchases
     }
     user_id = db.users.insert_one(user).inserted_id
     return jsonify({"id": str(user_id)})
@@ -85,9 +87,9 @@ def signup():
 @user_routes.route("/add-member", methods=["POST"])
 def add_member():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    member = data.get("member")
+    username = data["username"]
+    password = data["password"]
+    member = data["member"]
     if (member is not None and username is not None and password):
         db = get_db()
         user = db.users.find_one({

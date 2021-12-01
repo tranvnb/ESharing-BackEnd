@@ -27,13 +27,6 @@ users = {}
 
 @socketio.on("USER_ONLINE_CHANNEL")
 def subscribe_user_to_online_channel(data):
-    # print(data) # this is just to verify/see the data received from the client
-    # users[data] = request.sid # the session id is "saved"
-    # print("user connected USER_ONLINE_CHANNEL" + data)
-    # print(data)
-    # print(request.sid)
-    print(request.sid)
-    # print(request.namespace.socket.sessid)
     users[data] = request.sid
     return True
 
@@ -41,9 +34,12 @@ def subscribe_user_to_online_channel(data):
 def request_join_household(data):
     # print(data)
     # print(json_util.dumps(data))
-    json = json_util.loads(json_util.dumps(data))
-    person = json.get("FROM_USER")
-    owner = json.get("TO_OWNER")
+    
+    # json = json_util.loads(json_util.dumps(data))
+
+    json = data
+    person = json["FROM_USER"]
+    owner = json["TO_OWNER"]
     # print("JOIN_HOUSEHOLD_REQUEST from " + person + " to " + owner)
     message = {"FROM_USER": person, "TO_OWNER": owner}
     print("JOIN_HOUSEHOLD_REQUEST: " + str(message))
@@ -56,10 +52,13 @@ def request_join_household(data):
 
 @socketio.on("JOIN_HOUSEHOLD_REQUEST_RESPONSE")
 def resonse_from_house_owner(data):
-    json = json_util.loads(json_util.dumps(data))
-    user = json.get("TO_USER")
-    owner = json.get("FROM_OWNER")
-    message = json.get("MESSAGE")
+    
+    # json = json_util.loads(json_util.dumps(data))
+    
+    json = data
+    user = json["TO_USER"]
+    owner = json["FROM_OWNER"]
+    message = json["MESSAGE"]
     print("emit JOIN_HOUSEHOLD_REQUEST_RESPONSE from owner reply")
     emit("JOIN_HOUSEHOLD_REQUEST_RESPONSE", {"MESSAGE":"Message from the " + owner +": " + message} , room = users[user])
 
