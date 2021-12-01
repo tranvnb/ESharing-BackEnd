@@ -30,6 +30,20 @@ def remove(id):
         {"username": username, "password": password}, {"$pull": {"purchases": {"id": id}}})
     return jsonify({"message": "Purchase removed."})
 
+@purchase_routes.route("/many", methods=['DELETE'])
+def deleteMany():
+    data = request.get_json()
+    username = data["username"]
+    password = data["password"]
+    purchases = data["purchases"]
+    # should prevent access database if invalid data
+    db = get_db()
+    for item in purchases:
+        print("deletint many purchase items:", item["id"])
+        db.users.update_one(
+            {"username": username, "password": password}, {"$pull": {"purchases": {"id": item["id"]}}})
+    return jsonify({"message": "Purchases removed."})
+
 
 @ purchase_routes.route("/<string:id>", methods=['PUT'])
 def update(id):
