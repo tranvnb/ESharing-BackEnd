@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, make_response
-from flask.globals import request
+from flask import Blueprint, jsonify, make_response, request
 import json
 from bson import json_util
 from .database import get_db
@@ -55,24 +54,31 @@ def logout():
 
 @user_routes.route("/signup", methods=["POST"])
 def signup():
+    
     data = request.get_json()
+    print("User signuppppp", data)
     db = get_db()
     username = data.get("username")
     password = data.get("password")
     if (db.users.find_one({"username": username}) is not None):
         return make_response(jsonify({"message": "User already exists!"}), 403)
 
+    id = data.get("id")
     first_name = data.get("first_name")
     last_name = data.get("last_name")
     is_owner = data.get("is_owner")
-    members = data.get("members")
+    # members = data.get("members")
+    members = []
+    purchases = []
     user = {
+        "id": id,
         "username": username,
         "password": password,
         "first_name": first_name,
         "last_name": last_name,
         "is_owner": is_owner,
-        "members": members
+        "members": members,
+        "purchases": purchases
     }
     user_id = db.users.insert_one(user).inserted_id
     return jsonify({"id": str(user_id)})
@@ -81,9 +87,9 @@ def signup():
 @user_routes.route("/add-member", methods=["POST"])
 def add_member():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    member = data.get("member")
+    username = data["username"]
+    password = data["password"]
+    member = data["member"]
     if (member is not None and username is not None and password):
         db = get_db()
         user = db.users.find_one({
@@ -113,8 +119,9 @@ def add_member():
         # change member owner to false, they are not on their own anymore
         db.users.update_one(
             {"username": member},
-            {"$set": {"is_owner": False}}
+            {"$set": {"is_owner": False, "members": [username]}}
         )
+        
 
         return jsonify({"message": "member was added to household"})
     else:
@@ -145,7 +152,7 @@ def remove_member():
         # set the removed member to the owner on their own
         db.users.update_one(
             {"username": member},
-            {"$set": {"is_owner": True}}
+            {"$set": {"is_owner": True, "members": []}}
         )
 
         return jsonify({"message": "member was removed from household"})

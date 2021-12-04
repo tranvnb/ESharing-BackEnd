@@ -10,10 +10,9 @@ purchase_routes = Blueprint("purchase", __name__)
 @purchase_routes.route("/add", methods=['POST'])
 def add():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    purchase = data.get("purchase")
-
+    username = data["username"]
+    password = data["password"]
+    purchase = data["purchase"]
     db = get_db()
     db.users.find_one_and_update(
         {"username": username, "password": password}, {"$push": {"purchases": purchase}}, upsert=True)
@@ -23,21 +22,35 @@ def add():
 @purchase_routes.route("/<string:id>", methods=['DELETE'])
 def remove(id):
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = data["username"]
+    password = data["password"]
     # should prevent access database if invalid data
     db = get_db()
     db.users.update_one(
         {"username": username, "password": password}, {"$pull": {"purchases": {"id": id}}})
     return jsonify({"message": "Purchase removed."})
 
+@purchase_routes.route("/many", methods=['DELETE'])
+def deleteMany():
+    data = request.get_json()
+    username = data["username"]
+    password = data["password"]
+    purchases = data["purchases"]
+    # should prevent access database if invalid data
+    db = get_db()
+    for item in purchases:
+        print("deletint many purchase items:", item["id"])
+        db.users.update_one(
+            {"username": username, "password": password}, {"$pull": {"purchases": {"id": item["id"]}}})
+    return jsonify({"message": "Purchases removed."})
+
 
 @ purchase_routes.route("/<string:id>", methods=['PUT'])
 def update(id):
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    purchase = data.get("purchase")
+    username = data["username"]
+    password = data["password"]
+    purchase = data["purchase"]
     # make sure it always has id for further query
     purchase["id"] = id
     # NOTE: make sure all the properties of purchase are submitted.
@@ -51,8 +64,8 @@ def update(id):
 def findMemberPurchaseById(member, id):
     # TODO: should allow only in household, otherwise return false
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = data["username"]
+    password = data["password"]
     db = get_db()
 
     user = db.users.find_one(
@@ -70,8 +83,8 @@ def findMemberPurchaseById(member, id):
 def deleteAll():
     # TODO: should allow only in household, otherwise return false
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    username = data["username"]
+    password = data["password"]
     db = get_db()
     purchase = db.users.update_one(
         {"username": username, "password": password}, {"$set": {"purchases": []}})
