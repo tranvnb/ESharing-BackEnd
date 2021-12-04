@@ -119,8 +119,9 @@ def add_member():
         # change member owner to false, they are not on their own anymore
         db.users.update_one(
             {"username": member},
-            {"$set": {"is_owner": False}}
+            {"$set": {"is_owner": False, "members": [username]}}
         )
+        
 
         return jsonify({"message": "member was added to household"})
     else:
@@ -151,7 +152,7 @@ def remove_member():
         # set the removed member to the owner on their own
         db.users.update_one(
             {"username": member},
-            {"$set": {"is_owner": True}}
+            {"$set": {"is_owner": True, "members": []}}
         )
 
         return jsonify({"message": "member was removed from household"})

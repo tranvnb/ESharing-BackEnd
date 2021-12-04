@@ -54,13 +54,23 @@ def request_join_household(data):
 def resonse_from_house_owner(data):
     
     # json = json_util.loads(json_util.dumps(data))
-    
+    print ("==================", data)
     json = data
     user = json["TO_USER"]
     owner = json["FROM_OWNER"]
     message = json["MESSAGE"]
+    approved = json["APPROVED"]
     print("emit JOIN_HOUSEHOLD_REQUEST_RESPONSE from owner reply")
-    emit("JOIN_HOUSEHOLD_REQUEST_RESPONSE", {"MESSAGE":"Message from the " + owner +": " + message} , room = users[user])
+    emit("JOIN_HOUSEHOLD_REQUEST_RESPONSE", {"MESSAGE":"Message from the " + owner +": " + message, "APPROVED": approved, "FROM_OWNER": owner} , room = users[user])
+
+@socketio.on("REMOVED_MEMBER_FROM_HOUSEHOLD")
+def being_removed_from_household(data):
+    json = data
+    user = json["TO_USER"]
+    owner = json["FROM_OWNER"]
+    message = json["MESSAGE"]
+    message = {"FROM_OWNER": owner, "TO_USER": user, "MESSAGE": "You were removed from our house"}
+    emit("BEING_REMOVED_FROM_HOUSEHOLD", message, room = users[user])
 
 @socketio.on("USER_DISCONNECT")
 def user_disconnect(data):
