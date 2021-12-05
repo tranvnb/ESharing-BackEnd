@@ -13,6 +13,7 @@ def add():
     username = data["username"]
     password = data["password"]
     purchase = data["purchase"]
+    print(username, password, purchase)
     db = get_db()
     db.users.find_one_and_update(
         {"username": username, "password": password}, {"$push": {"purchases": purchase}}, upsert=True)
@@ -53,10 +54,14 @@ def update(id):
     purchase = data["purchase"]
     # make sure it always has id for further query
     purchase["id"] = id
+    # print("purchase",purchase)
     # NOTE: make sure all the properties of purchase are submitted.
     db = get_db()
-    db.users.find_one_and_update(
-        {"username": username, "password": password, "purchases.id": id}, {"$set": {"purchases.$[]": purchase}}, upsert=True)
+    # db.users.update_one(
+    #     {"username": username, "password": password, "purchases.id": id}, {"$set": {"purchases.$": purchase}}, upsert=True)
+
+    db.users.update_one(
+        {"username": username, "password": password}, {"$set": {"purchases.$[element]": purchase}}, upsert=True, array_filters=[{"element.id":id}])
     return jsonify({"message": "Purchase updated."})
 
 
